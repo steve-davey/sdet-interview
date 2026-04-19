@@ -37,3 +37,25 @@ def test_update_post(base_url):
 def test_delete_post(base_url):
     r = requests.delete(f"{base_url}/posts/1")
     assert r.status_code == 200
+
+@pytest.mark.parametrize("post_id", [1, 2, 3, 50, 100])
+def test_get_post_by_id(base_url, post_id):
+    r = requests.get(f"{base_url}/posts/{post_id}")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["id"] == post_id
+
+@pytest.mark.parametrize("post_id", [0, -1, 99999, 999999])
+def test_invalid_post_id_returns_404(base_url, post_id):
+    r = requests.get(f"{base_url}/posts/{post_id}")
+    assert r.status_code == 404
+
+@pytest.mark.parametrize("post_id,expected_status", [
+    (1,     200),
+    (100,   200),
+    (101,   404),   # doesn't exist
+    (-1,    404),
+])
+def test_get_post_status(base_url, post_id, expected_status):
+    r = requests.get(f"{base_url}/posts/{post_id}")
+    assert r.status_code == expected_status
