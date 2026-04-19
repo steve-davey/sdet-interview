@@ -59,3 +59,13 @@ def test_invalid_post_id_returns_404(base_url, post_id):
 def test_get_post_status(base_url, post_id, expected_status):
     r = requests.get(f"{base_url}/posts/{post_id}")
     assert r.status_code == expected_status
+
+@pytest.mark.parametrize("user_id,expected_status", [
+    (1,     200),
+    (2,   200),
+    (11,   404),   # doesn't exist
+    (-1,    404),
+])
+def test_get_user_status(base_url, user_id, expected_status):
+    r = requests.get(f"{base_url}/users/{user_id}")
+    assert r.status_code == expected_status
